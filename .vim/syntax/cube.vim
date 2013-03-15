@@ -1,15 +1,17 @@
 " Vim syntax file
-" File:         cube.vim
-" Description:  Cube script syntax file for vim
-" Last Change:  2013-02-23
+" Language:     Cube engine cfg files
+" Last Change:  2013-03-07
 " Version:      1.337
+
+" TODO $[arg]
 
 " Check if syntax is active {{{1
 if exists ("b:current_syntax")
     finish
 endif
 
-" All commands are case sensitive, but key names aren't {{{1
+" Case Sensitive: {{{1
+" ===============
 syn case match
 
 " Options: {{{1
@@ -56,10 +58,6 @@ syn keyword cubeRepeat      loop                   skipwhite nextgroup=cubeLoopV
 syn match cubeLoopVar       contained /@*\<\k\+\>/ skipwhite nextgroup=cubeLoopCount  contains=@cubeParameter
 syn match cubeLoopCount     contained /@*\<\k\+\>/ skipwhite nextgroup=@cubeParameter contains=@cubeParameter
 
-" Delimiter: {{{1
-" ==========
-syn match cubeDelimiter     /;/
-
 " Unknown Commands: {{{1
 " =================
 syn match   cubeUnknownCmd      /\<\k\+\>/ skipwhite nextgroup=cubeParameterRegion
@@ -73,7 +71,7 @@ syn cluster cubeCommands        contains=cubeCmd,cubeAlias,cubeBind,cubeSchemeCm
 syn cluster cubeCommandBlocks   contains=cubeBlock,cubeParen,@cubeMacro
 syn cluster cubeBody            contains=@cubeCommands,@cubeCommandBlocks,cubeComment
 
-syn cluster cubeMacro           contains=cubeAtBlock,cubeAtParen,cubeAtVariable
+syn cluster cubeMacro           contains=cubeAtBlock,cubeAtParen,cubeVarParen,cubeAtVariable
 syn cluster cubeMacroCommand    contains=cubeAtBlockCommand,cubeAtParenCommand,cubeAtVariableCommand
 
 syn cluster cubeParameter       contains=cubeVariable,cubeNumber,cubeString,cubeUnquotedString,@cubeMacro,@cubeBody
@@ -84,7 +82,7 @@ syn cluster cubeDelimiters      contains=cubeDelimiter,cubeComment
 
 " Parameter Region: {{{1
 " =================
-syn region  cubeParameterRegion contained start=+\ze\S\&[^/]+  end=+[;)\]]+me=s-1 end=+$+ end=+//+me=s-1 keepend contains=@cubeParameter
+syn region  cubeParameterRegion contained start=+\ze\S\&[^)\];]\&\%(//\)\@!+  end=+[;)\]]+me=s-1 end=+$+ end=+//+me=s-1 keepend contains=@cubeParameter
 
 " Constants: {{{1
 " ==========
@@ -99,14 +97,16 @@ syn match cubeNumber         /\<[+-]\?0x\x\+\>/            display contained ski
 
 " Strings: {{{1
 " ========
-syn region cubeString            start=+"+                                 skip=+\^\^\|\^"+    end=+"+    skipwhite  contains=cubeEscape               extend  display  oneline
+syn region cubeString            start=+"+                                  skip=+\^\^\|\^"+    end=+"+    skipwhite  contains=cubeEscape               extend  display  oneline
 " complicated start matches because of possible @-prefixes
-syn region cubeBlock             start=+\([^@]\|^\)\@<=\[+                 skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold
-syn region cubeParen             start=+\([^@]\|^\)\@<=(+                  skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend
-syn region cubeAtBlockCommand    start=+\([^@]\|^\)\@<=@\+\[+              skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold  nextgroup=cubeParameterRegion
-syn region cubeAtParenCommand    start=+\([^@]\|^\)\@<=@\+(+               skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend        nextgroup=cubeParameterRegion
-syn region cubeAtBlock           contained start=+\([^@]\|^\)\@<=@\+\[+    skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError,cubeAtBlockCommand    extend  fold
-syn region cubeAtParen           contained start=+\([^@]\|^\)\@<=@\+(+     skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError,cubeAtParenCommand      extend
+syn region cubeBlock             start=+\%([^\$@]\|^\)\@<=\[+               skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold
+syn region cubeParen             start=+\%([^\$@]\|^\)\@<=(+                skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend
+syn region cubeAtBlockCommand    start=+\%([^@]\|^\)\@<=@\+\[+              skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold  nextgroup=cubeParameterRegion
+syn region cubeAtParenCommand    start=+\%([^@]\|^\)\@<=@\+(+               skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend        nextgroup=cubeParameterRegion
+syn region cubeVarParenCommand   start=+\%([^\$]\|^\)\@<=\$\+(+             skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend        nextgroup=cubeParameterRegion
+syn region cubeAtBlock           contained start=+\%([^@]\|^\)\@<=@\+\[+    skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError,cubeAtBlockCommand    extend  fold
+syn region cubeAtParen           contained start=+\%([^@]\|^\)\@<=@\+(+     skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError,cubeAtParenCommand      extend
+syn region cubeVarParen          contained start=+\%([^\$]\|^\)\@<=\$\+(+   skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError,cubeVarParenCommand     extend
 
 " Entities: {{{1
 " =========
@@ -413,8 +413,8 @@ syn case match
 
 " Variables: {{{1
 " ==========
-syn match cubeVariable          /\$\k\+\>/              skipwhite
-syn match cubeAtVariableCommand /@\+\k\+\>/             skipwhite nextgroup=@cubeParameterRegion
+syn match cubeVariable          /\$[\$@]\{-}\k\{-}\ze\%(@\|\>\)/        skipwhite contains=cubeAtVariableCommand
+syn match cubeAtVariableCommand /@[\$@]\{-}\k\{-}\>/         skipwhite nextgroup=@cubeParameterRegion
 "syn match cubeAtVariable    /@\+/                       skipwhite nextgroup=@cubeParameter
 
 syn match cubeAtVariable        contained /@\+\k\+\>/   skipwhite
@@ -470,9 +470,13 @@ syn keyword cubeSchemeCmd     newent clearents       skipwhite nextgroup=cubeEnt
 " Assignments: {{{1
 " ============
 " TODO add error when more than one parameter after =
-syn match  cubeAssignment        +\%(\k\|["@]\)\+\ze\s\+=+                       skipwhite nextgroup=cubeAssignmentEquals contains=cubeDefVar,cubeDefCmd,@cubeMacro,cubeString
-syn match  cubeAssignmentEquals  +\s\+\zs=+                           contained skipwhite nextgroup=@cubeParameter
+syn match  cubeAssignment        +\%(\k\|["\$@]\)\+\ze\s\+=+          skipwhite nextgroup=cubeAssignmentEquals contains=cubeVariable,cubeDefVar,cubeDefCmd,@cubeMacro,cubeString
+syn match  cubeAssignmentEquals  +\s\+\zs=+                 contained skipwhite nextgroup=@cubeParameter
 "syn region cubeAssignmentRegion contained start=+\ze\S+  end=+\ze[;)\]]+ end=+$+ end=+\ze//+ end=+\ze\s\S+ skipwhite keepend contains=@cubeParameter nextgroup=cubeParamError
+
+" Delimiter: {{{1
+" ==========
+syn match cubeDelimiter     /;/
 
 " Comments: {{{1
 " =========
@@ -507,18 +511,22 @@ if !exists("sh_maxlines")
 endif
 exec "syn sync minlines=" . cube_minlines . " maxlines=" . cube_maxlines
 
-syn sync match cubeBlockSync    grouphere   cubeBlock  +\([^@]\|^\)\@<=\[+
+syn sync match cubeBlockSync    grouphere   cubeBlock  +\%([^@]\|^\)\@<=\[+
 syn sync match cubeBlockSync    groupthere  cubeBlock  +\]+
-syn sync match cubeParenSync    grouphere   cubeParen  +\([^@]\|^\)\@<=(+
+syn sync match cubeParenSync    grouphere   cubeParen  +\%([^@]\|^\)\@<=(+
 syn sync match cubeParenSync    groupthere  cubeParen  +)+
-syn sync match cubeAtBlockSync  grouphere   cubeAtBlock  +\([^@]\|^\)\@<=@\+\[+
+syn sync match cubeAtBlockSync  grouphere   cubeAtBlock  +\%([^@]\|^\)\@<=@\+\[+
 syn sync match cubeAtBlockSync  groupthere  cubeAtBlock  +\]+
-syn sync match cubeAtParenSync  grouphere   cubeAtParen  +\([^@]\|^\)\@<=@\+(+
+syn sync match cubeAtParenSync  grouphere   cubeAtParen  +\%([^@]\|^\)\@<=@\+(+
 syn sync match cubeAtParenSync  groupthere  cubeAtParen  +)+
-syn sync match cubeAtBlockCommandSync  grouphere   cubeAtBlockCommand  +\([^@]\|^\)\@<=@\+\[+
+syn sync match cubeVarParenSync grouphere   cubeVarParen +\%([^\$]\|^\)\@<=\$\+(+
+syn sync match cubeVarParenSync groupthere  cubeVarParen +)+
+syn sync match cubeAtBlockCommandSync  grouphere   cubeAtBlockCommand  +\%([^@]\|^\)\@<=@\+\[+
 syn sync match cubeAtBlockCommandSync  groupthere  cubeAtBlockCommand  +\]+
-syn sync match cubeAtParenCommandSync  grouphere   cubeAtParenCommand  +\([^@]\|^\)\@<=@\+(+
+syn sync match cubeAtParenCommandSync  grouphere   cubeAtParenCommand  +\%([^@]\|^\)\@<=@\+(+
 syn sync match cubeAtParenCommandSync  groupthere  cubeAtParenCommand  +)+
+syn sync match cubeVarParenCommandSync grouphere   cubeVarParenCommand +\%([^\$]\|^\)\@<=\$\+(+
+syn sync match cubeVarParenCommandSync groupthere  cubeVarParenCommand +)+
 
 " Highlighting: {{{1
 " =============
@@ -542,11 +550,13 @@ hi link cubeParenError   Error
 hi link cubeParamError   Error
 
 hi link cubeAtVariable   Special
-hi link cubeAtParen      Special
 hi link cubeAtBlock      Special
+hi link cubeAtParen      Special
+hi link cubeVarParen     Identifier
 hi link cubeAtVariableCommand   Special
-hi link cubeAtParenCommand      Special
 hi link cubeAtBlockCommand      Special
+hi link cubeAtParenCommand      Special
+hi link cubeVarParenCommand     Identifier
 
 hi link cubeConditional  Conditional
 hi link cubeRepeat       Repeat
