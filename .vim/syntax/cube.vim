@@ -3,8 +3,6 @@
 " Last Change:  2013-03-07
 " Version:      1.337
 
-" TODO $[arg]
-
 " Check if syntax is active {{{1
 if exists ("b:current_syntax")
     finish
@@ -351,7 +349,7 @@ CubeAddBuiltinVar oqdist zpass glowpass envpass batchgeom oqgeom dbgffsm dbgffdl
 CubeAddBuiltinVar moving entmoving dragging selectcorners passthroughcube minimapheight entediting shaders
 CubeAddBuiltinVar shaderprecision forceglsl killsendsp avatarzoomfov avatarfov avatardepth
 CubeAddBuiltinVar nearplane reflectclip reflectclipavatar polygonoffsetfactor polygonoffsetunits
-CubeAddBuiltinVar showeditstats statrate animationinterpolationtime ragdolltimestepmin ragdolltimestepmax
+CubeAddBuiltinVar showeditstats statrate ragdolltimestepmin ragdolltimestepmax
 CubeAddBuiltinVar ragdollrotfric ragdollrotfricstop ragdollconstrain ragdollwaterexpireoffset ragdollwaterfric
 CubeAddBuiltinVar ragdollgroundfric ragdollairfric ragdollunstick ragdollexpireoffset maxskelanimdata
 CubeAddBuiltinVar ragdolleyesmooth ragdolleyesmoothmillis ragdollbodyfric aaenvmap depthoffset
