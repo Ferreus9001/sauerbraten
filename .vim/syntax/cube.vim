@@ -1,113 +1,99 @@
 " Vim syntax file
 " Language:     Cube engine cfg files
-" Last Change:  2013-03-07
+" Last Change:  2013-08-08
 " Version:      1.337
 
 " Check if syntax is active {{{1
-if exists ("b:current_syntax")
+if exists("b:current_syntax")
     finish
 endif
 
 " Case Sensitive: {{{1
 " ===============
+
 syn case match
 
 " Options: {{{1
 " ========
+
 setlocal iskeyword=@,48-57,_,192-255,:,#,%,=,<,>,+,-,*,\\|,?,&,/,~,.,!,44,,^
 setlocal commentstring=//%s
 
 " Keyword Definition Shortcuts: {{{1
 " =============================
+
 " Cube builtin commands like getdemo
-command -nargs=* CubeAddCmd         syn keyword cubeCmd         <args> skipwhite nextgroup=cubeParameterRegion
+command! -nargs=* CubeAddCmd         syn keyword cubeCmd         <args> skipwhite
 " Cube default defined commands like demo
-command -nargs=* CubeAddDefCmd      syn keyword cubeDefCmd      <args> skipwhite nextgroup=cubeAssignmentEquals,cubeParameterRegion
+command! -nargs=* CubeAddDefCmd      syn keyword cubeDefCmd      <args> skipwhite nextgroup=cubeAssignmentEquals
 " TODO Cube commands to categorize
-command -nargs=* CubeAddDontKnowCmd syn keyword cubeDontKnowCmd <args> skipwhite nextgroup=cubeParameterRegion
-command -nargs=* CubeAddShader      syn keyword cubeShader      <args> skipwhite nextgroup=cubeParameterRegion contained
-command -nargs=* CubeAddShaderParam syn keyword cubeShaderParam <args> skipwhite nextgroup=cubeParameterRegion contained
+command! -nargs=* CubeAddDontKnowCmd syn keyword cubeDontKnowCmd <args> skipwhite
+command! -nargs=* CubeAddShader      syn keyword cubeShader      <args> skipwhite contained
+command! -nargs=* CubeAddShaderParam syn keyword cubeShaderParam <args> skipwhite contained
 " Cube math operation commands like +
-command -nargs=* CubeAddMathCmd     syn keyword cubeMathCmd     <args> skipwhite nextgroup=cubeParameterRegion
+command! -nargs=* CubeAddMathCmd     syn keyword cubeMathCmd     <args> skipwhite
 " Cube by default used variables like gamehud
-command -nargs=* CubeAddDefVar      syn keyword cubeDefVar      <args> skipwhite nextgroup=cubeAssignmentEquals,cubeParameterRegion
+command! -nargs=* CubeAddDefVar      syn keyword cubeDefVar      <args> skipwhite nextgroup=cubeAssignmentEquals
 " Cube builtin variables like maxfps
-command -nargs=* CubeAddBuiltinVar  syn keyword cubeBuiltinVar  <args> skipwhite nextgroup=cubeParameterRegion
+command! -nargs=* CubeAddBuiltinVar  syn keyword cubeBuiltinVar  <args> skipwhite
 
 " Syntax Errors: {{{1
 " ==============
-syn match cubeBracketError  +\]+ display
-syn match cubeParenError    +)+  display
-syn match cubeParamError    contained +\s\(\S\&\%(//\)\@!\).*$+
 
-syn cluster cubeError       contains=cubeBracketError,cubeParenError,cubeParamError
+syn match cubeParenError  +\]+ display
+syn match cubeParenError  +)+  display
 
 " Todo: {{{1
 " =====
-syn keyword cubeTodo    contained TODO FIXME XXX
+
+syn keyword cubeTodo        contained TODO FIXME XXX
 
 " Conditionals: {{{1
 " =============
-syn keyword cubeConditional if                  skipwhite nextgroup=cubeParameterRegion
-syn keyword cubeRepeat      while looplist      skipwhite nextgroup=cubeParameterRegion
-" Loop: {{{1
-" =====
-syn keyword cubeRepeat      loop                   skipwhite nextgroup=cubeLoopVar
-syn match cubeLoopVar       contained /@*\<\k\+\>/ skipwhite nextgroup=cubeLoopCount  contains=@cubeParameter
-syn match cubeLoopCount     contained /@*\<\k\+\>/ skipwhite nextgroup=@cubeParameter contains=@cubeParameter
 
-" Unknown Commands: {{{1
-" =================
-syn match   cubeUnknownCmd      /\<\k\+\>/ skipwhite nextgroup=cubeParameterRegion
+syn keyword cubeConditional if                  skipwhite
+syn keyword cubeRepeat      while looplist loop skipwhite
 
 " Generic Clusters: {{{1
 " =================
-syn cluster cubeCommands        contains=cubeCmd,cubeAlias,cubeBind,cubeSchemeCmd,cubeDefCmd,cubeDontKnowCmd,cubeMathCmd,cubeBuiltinVar,cubeConditional,cubeRepeat,cubeUnknownCmd,@cubeSchemeCmds,@cubeMacroCommand
-" TODO temp commands
-"syn cluster cubeCommands        add=cubeShaderParam
-
-syn cluster cubeCommandBlocks   contains=cubeBlock,cubeParen,@cubeMacro
-syn cluster cubeBody            contains=@cubeCommands,@cubeCommandBlocks,cubeComment
-
-syn cluster cubeMacro           contains=cubeAtBlock,cubeAtParen,cubeVarParen,cubeAtVariable
-syn cluster cubeMacroCommand    contains=cubeAtBlockCommand,cubeAtParenCommand,cubeAtVariableCommand
-
-syn cluster cubeParameter       contains=cubeVariable,cubeNumber,cubeString,cubeUnquotedString,@cubeMacro,@cubeBody
 
 syn cluster cubeSchemeCmds      add=cubeSchemeCmd
 
-syn cluster cubeDelimiters      contains=cubeDelimiter,cubeComment
-
-" Parameter Region: {{{1
-" =================
-syn region  cubeParameterRegion contained start=+\ze\S\&[^)\];]\&\%(//\)\@!+  end=+[;)\]]+me=s-1 end=+$+ end=+//+me=s-1 keepend contains=@cubeParameter
-
 " Constants: {{{1
 " ==========
+
 " string constant without quotes
-syn match cubeUnquotedString /\<\k\+\>/                    display contained skipwhite
+syn match cubeUnquotedString /\<\k\+\>/                    display skipwhite
 " number like -543 or 3.14
-syn match cubeNumber         /\<[+-]\?\d\+\(\.\d\+\)\?\>/  display contained skipwhite
+syn match cubeNumber         /\<[+-]\?\d\+\(\.\d\+\)\?\>/  display skipwhite
 " number like .05 or -.3
-syn match cubeNumber         /\<[+-]\?\.\d\+\>/            display contained skipwhite
+syn match cubeNumber         /\<[+-]\?\.\d\+\>/            display skipwhite
 " hex-number 0xdeadbeef
-syn match cubeNumber         /\<[+-]\?0x\x\+\>/            display contained skipwhite
+syn match cubeNumber         /\<[+-]\?0x\x\+\>/            display skipwhite
+" hex-number 0x12.FF
+syn match cubeNumber         /\<[+-]\?0x\x*\.\x\+\>/       display skipwhite
 
 " Strings: {{{1
 " ========
-syn region cubeString            start=+"+                                  skip=+\^\^\|\^"+    end=+"+    skipwhite  contains=cubeEscape               extend  display  oneline
-" complicated start matches because of possible @-prefixes
-syn region cubeBlock             start=+\%([^\$@]\|^\)\@<=\[+               skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold
-syn region cubeParen             start=+\%([^\$@]\|^\)\@<=(+                skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend
-syn region cubeAtBlockCommand    start=+\%([^@]\|^\)\@<=@\+\[+              skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError     extend  fold  nextgroup=cubeParameterRegion
-syn region cubeAtParenCommand    start=+\%([^@]\|^\)\@<=@\+(+               skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend        nextgroup=cubeParameterRegion
-syn region cubeVarParenCommand   start=+\%([^\$]\|^\)\@<=\$\+(+             skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError       extend        nextgroup=cubeParameterRegion
-syn region cubeAtBlock           contained start=+\%([^@]\|^\)\@<=@\+\[+    skip=+\^\^\|\^\]+   end=+\]+   skipwhite  contains=TOP,cubeBracketError,cubeAtBlockCommand    extend  fold
-syn region cubeAtParen           contained start=+\%([^@]\|^\)\@<=@\+(+     skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError,cubeAtParenCommand      extend
-syn region cubeVarParen          contained start=+\%([^\$]\|^\)\@<=\$\+(+   skip=+\^\^\|\^)+    end=+)+    skipwhite  contains=TOP,cubeParenError,cubeVarParenCommand     extend
+
+syn region cubeString      start=+"+                       skip=+\^\^\|\^"\|\^\n+    end=+"+ end=+\n+     contains=cubeStringInner,cubeEscape    extend keepend
+syn match  cubeStringInner contained /./ display
+syn region cubeBlock       start=+\[+    end=+\]+   matchgroup=cubeParenError end=+)+  contains=TOP,cubeParenError extend  fold
+syn region cubeParen       start=+(+     end=+)+    matchgroup=cubeParenError end=+\]+ contains=TOP,cubeParenError extend
+syn region cubeAtBlock     matchgroup=cubeMacro start=+@\+\[+  end=+\]+   matchgroup=cubeParenError end=+)+  contains=TOP,cubeParenError extend  fold
+syn region cubeAtParen     matchgroup=cubeMacro start=+@\+(+   end=+)+    matchgroup=cubeParenError end=+\]+ contains=TOP,cubeParenError extend
+syn region cubeVarBlock    matchgroup=cubeVar   start=+\$\+\[+ end=+\]+   matchgroup=cubeParenError end=+)+  contains=TOP,cubeParenError extend  fold
+syn region cubeVarParen    matchgroup=cubeVar   start=+\$\+(+  end=+)+    matchgroup=cubeParenError end=+\]+ contains=TOP,cubeParenError extend
+
+" Escapes: {{{1
+" ========
+
+syn match cubeEscape   +\^["\^fnt\n]\?+       extend
+syn match cubeEscape   +\^f\%(\d\|[\~]\|\a\)+ extend
 
 " Entities: {{{1
 " =========
+
 syn keyword cubeEntities    contained light playerstart shells bullets rockets riflerounds quaddamage health healthboost
 syn keyword cubeEntities    contained greenarmour yellowarmour teleport teledest mapmodel monster trigger jumppad flag
 syn keyword cubeEntities    contained spotlight envmap sound base grenades cartridges box barrel platform elevator
@@ -115,10 +101,12 @@ syn keyword cubeEntities    contained respawnpoint particles spawn
 
 " Materials: {{{1
 " ==========
+
 syn keyword cubeMaterials   contained air water clip glass noclip lava gameclip death alpha
 
 " Shader: {{{1
 " =======
+
 CubeAddShader       bumpspecmapworld bumpspecmapparallaxworld stdworld noglareblendworld noglarealphaworld
 CubeAddShader       noglareworld depthfxsplitworld depthfxworld fogworld glowworld envworld bumpparallaxworld
 CubeAddShader       pulseglowworld bumpspecmapparallaxglowworld bumpspecmapglowworld bumpspecglowworld
@@ -151,12 +139,13 @@ CubeAddShader       caustic causticfast shadowmapcaster notexturemodel
 
 " Cube Command Keywords: {{{1
 " ======================
+
 CubeAddCmd   arch archvertex at attack backward complete concat concatword connect conskip
 CubeAddCmd   copy corner delent demodelaymsec demoplaybackspeed demotracking disconnect
 CubeAddCmd   dynlight echo editheight edittag edittex edittoggle equalize exec fog
 CubeAddCmd   fogcolour format forward fpsrange fullbright gamespeed getmap getmode heighfield
 CubeAddCmd   heightfield hidestats history importcube jump kill left lighterror lightscale
-CubeAddCmd   listlen loadcrosshair loadgame map mapmodel mapmodelreset mapmsg menuitem clearconsole
+CubeAddCmd   listlen loadcrosshair loadgame map mapmodel mapmodelreset menuitem clearconsole
 CubeAddCmd   minlod mod mode music name newmap newmenu onrelease password paste perlin quit
 CubeAddCmd   rate recalc record registersound replace result right rnd savegame savemap say saycommand
 CubeAddCmd   scalelights screenshot select sendmap servermenu showmenu showmip showscores skill sleep
@@ -170,7 +159,7 @@ CubeAddCmd   hidehud entselsnap outline wireframe allfaces minimapclip
 CubeAddCmd   calclight isspectator do taunt toggleconsole togglemainmenu getaccuracy
 CubeAddCmd   getdeaths getfrags indexof cond getflags getname substr strstr strlen max min clearbrush
 CubeAddCmd   guifield listclients timeremaining getclientnum nextweapon cycleweapon altsound brushvert
-CubeAddCmd   brushx brushy addblendbrush materialreset inputcommand sayteam newgui guibar guibutton 
+CubeAddCmd   brushx brushy addblendbrush materialreset inputcommand sayteam newgui guibar guibutton
 CubeAddCmd   guilist guiimage getcrosshair guitext isconnected m_edit getteam spectator guistrut
 CubeAddCmd   guitab loopfiles guistayopen guiradio getmastermode getclienticon getclientname ismaster
 CubeAddCmd   setmaster getclientteam setteam kick guislider guionclear guicheckbox guiservers initservers
@@ -207,7 +196,7 @@ CubeAddCmd   startlistenserver stoplistenserver serverip serverport maxclients s
 CubeAddCmd   serverdesc serverpass adminpass servermotd updatemaster mastername restrictdemos maxdemos
 CubeAddCmd   maxdemosize ctftkpenalty ignore unignore lanconnect reconnect clearservers keepserver
 CubeAddCmd   damageblendfactor damageblend mastermode clearbans goto pausegame recorddemo
-CubeAddCmd   cleardemos listdemos getdemo movie botlimit botbalance
+CubeAddCmd   cleardemos listdemos getdemo movie botlimit botbalance escape sublist
 CubeAddCmd   unescape stripcolors getfvarmin getfvarmax getvarmin getvarmax listsplice listfind
 CubeAddCmd   sortlist fullconsole importcuberemip isai defvertexparam
 CubeAddCmd   dbgdec debugglare dbggras grassanimmillis grassanimscale bumperror lerptjoints
@@ -233,7 +222,7 @@ CubeAddCmd   nearestent font fontoffset fontscale fonttex fontchar fontskip font
 CubeAddCmd   hashpwd dauthkick sauthkick mastermodename isauth genauthkey saveauthkeys movewaypoints
 CubeAddCmd   adduser clearusers clearwpcache teamkillkick teamkillkickreset maprotationreset getfollow triggerstate checkmaps
 
-CubeAddCmd   mdlcullface mdlcollide mdlellipsecollide mdlspec mdlambient mdlalphatest mdlalphablend mdlalphadepth 
+CubeAddCmd   mdlcullface mdlcollide mdlellipsecollide mdlspec mdlambient mdlalphatest mdlalphablend mdlalphadepth
 CubeAddCmd   mdldepthoffset mdlglow mdlglare mdlenvmap mdlfullbright mdlshader mdlspin mdlscale mdltrans mdlyaw
 CubeAddCmd   mdlpitch mdlshadow mdlbb mdlextendbb mdlname mdlopt stdmodel md2pitch md2anim md5bumpmap md5dir
 CubeAddCmd   md5skin md5load md5tag md5spec md5envmap md3load md3skin md5pitch md5adjust md5anim md5glare md5link
@@ -243,15 +232,19 @@ CubeAddCmd   iqmdir iqmload iqmskin iqmtag iqmanim iqmadjust iqmanimpart iqmpitc
 
 " Cube Math And Operator Keywords: {{{1
 " ===========================
+
 " TODO commands:
-CubeAddMathCmd sqrt atan acos asin modf loge log2 log10 minf maxf absf
+CubeAddMathCmd sin cos tan asin acos atan sqrt pow
+CubeAddMathCmd modf minf maxf absf abs
+CubeAddMathCmd loge log2 log10 exp
 CubeAddMathCmd ? ! \|\| &&
-CubeAddMathCmd & \| ~ &~ << >>
+CubeAddMathCmd ^ & \| ~ ^~ &~ \|~ << >>
 CubeAddMathCmd + - * div +f -f *f divf
 CubeAddMathCmd = != < > <= >= =s !=s <s >s <=s >=s =f !=f <f >f <=f >=f
 
 " Cube DontKnowCmds: {{{1
 " ==================
+
 "CubeAddDontKnowCmd bumpenvmapnospecmodel bumpenvmapmodel envmapscale maskscale spawnname skin bumpmap adjust pitchcorrect pitchtarget
 "CubeAddDontKnowCmd animpart lightdirworld skeleton vertexanimation triangles bumpmasksmodel bumpmasksnospecmodel nodes bumpnospecmodel
 "CubeAddDontKnowCmd shadowmapcaster lightdir notexturemodel shadowintensity aidebug
@@ -264,6 +257,7 @@ CubeAddMathCmd = != < > <= >= =s !=s <s >s <=s >=s =f !=f <f >f <=f >=f
 
 " Cube Default Command Keywords: {{{1
 " ==============================
+
 CubeAddDefCmd  allowspedit demo ffa coop teamplay insta instateam effic efficteam tac tacteam capture
 CubeAddDefCmd  regencapture ctf instactf protect instaprotect hold instahold efficctf efficprotect effichold
 CubeAddDefCmd  collect instacollect efficcollect sp dmsp editextend editdel editflip selentfindall
@@ -283,7 +277,7 @@ CubeAddDefCmd  glareworldshader bumpvariantshader shadowmapcastervertexshader no
 CubeAddDefCmd  modelvertexshader modelfragmentshader blur3shader blur5shader bloomshader explosionshader
 CubeAddDefCmd  particleshader causticshader follow nextfollow searchbinds searchspecbinds searcheditbinds
 CubeAddDefCmd  playasong editrotate editcut passthrough setblendpaintmode scrollblendbrush selectbrush
-CubeAddDefCmd  setupbloom bloom playermodelbutton
+CubeAddDefCmd  setupbloom bloom playermodelbutton mapmsg
 
 CubeAddDefCmd  ent_action_base ent_action_teleport ent_action_teledest ent_action_mapmodel
 CubeAddDefCmd  ent_action_spotlight ent_action_light ent_action_jumppad ent_action_respawnpoint
@@ -293,6 +287,9 @@ CubeAddDefCmd  ent_action_riflerounds ent_action_grenades ent_action_cartridges 
 CubeAddDefCmd  ent_action_health ent_action_healthboost ent_action_greenarmour ent_action_yellowarmour
 CubeAddDefCmd  ent_action_box ent_action_barrel ent_action_platform ent_action_elevator
 
+" Cube Default Variable Keywords: {{{1
+" ==============================
+
 CubeAddDefVar defaultmodifier modifier brushcopy multiplier multiplier2 gamehud guirolloveraction
 CubeAddDefVar guirolloverimgaction guirolloverimgpath guirollovername brushindex brushmax brushname
 CubeAddDefVar speditlock playermodelnum playermodelname playermodelstory playermodeldir playermodelicon
@@ -301,10 +298,12 @@ CubeAddDefVar capturemaps4 ctfmaps1 ctfmaps2 ctfmaps3 ctfmaps4 conceptmaps spmap
 CubeAddDefVar crosshairs botmatchcount botmatchmaxskill botmatchminskill newmapsize savemap_name
 CubeAddDefVar skies1 skies2 setting_entediting build_trigger lightcolour lightbright bindactions entguitype
 CubeAddDefVar entattributes entattribname entattriblimits entattriblimits2 enttypelist entcopybuf
-CubeAddDefVar opaquepaste cancelpaste grabbing entswithdirection edithud blendpaintmodes
+CubeAddDefVar opaquepaste cancelpaste grabbing entswithdirection edithud blendpaintmodes spmodenames
+CubeAddDefVar modenames
 
 " Cube Builtin Variable Keywords: {{{1
 " ===============================
+
 CubeAddBuiltinVar ammohud animationinterpolationtime muzzlelight muzzleflash floatspeed fullbrightmodels
 CubeAddBuiltinVar forceplayermodels teamskins texreduce deadpush aniso applydialog hitsound paused aspect
 CubeAddBuiltinVar ati_skybox_bug autoauth autocompactvslots autorepammo autosortservers autoupdateservers
@@ -323,7 +322,7 @@ CubeAddBuiltinVar fov fpdepthfx fpshadowmap fullbrightmodels fullconfilter fullc
 CubeAddBuiltinVar glaresize glassenv glowmodels gpuskel grass grassdist grassheight grassstep grasstaper
 CubeAddBuiltinVar gui2d guiautotab guiclicktab guifadein guifollow guipushdist guisens hidedead highlightscore
 CubeAddBuiltinVar hitcrosshair hitsound hudgun hudgunsdir hudgunsway hwmipmap invmouse thirdperson lightmodels
-CubeAddBuiltinVar lightthreads matskel maxbarreldebris maxcon maxdebris maxdecaldistance maxdecaltris menufps 
+CubeAddBuiltinVar lightthreads matskel maxbarreldebris maxcon maxdebris maxdecaldistance maxdecaltris menufps
 CubeAddBuiltinVar maxdynlights maxfps maxhistory maxmodelradiusdistance maxparticledistance maxparticles
 CubeAddBuiltinVar maxparticletextdistance maxradarscale maxreflect maxroll maxservpings maxsoundradius
 CubeAddBuiltinVar maxsoundsatonce maxtexsize maxtrail menuautoclose menudistance miniconfade miniconfilter
@@ -343,13 +342,13 @@ CubeAddBuiltinVar texreduce trilinear undomegs usenp2 vertwater wallclock wallcl
 CubeAddBuiltinVar waterenvmap waterfade waterfallenv waterfallrefract waterlod waterreflect waterrefract
 CubeAddBuiltinVar watersubdiv zoomaccel zoomautosens zoomfov zoominvel zoomoutvel zoomsens stereo
 CubeAddBuiltinVar lobbymap lobbymode localmap localmode allplayermodels envmapradius envmapmodels
-CubeAddBuiltinVar envmapsize dtoutline ffdlscissor serveruprate masterport dbggrass 
+CubeAddBuiltinVar envmapsize dtoutline ffdlscissor serveruprate masterport dbggrass
 CubeAddBuiltinVar oqdist zpass glowpass envpass batchgeom oqgeom dbgffsm dbgffdl
 
 CubeAddBuiltinVar moving entmoving dragging selectcorners passthroughcube minimapheight entediting shaders
 CubeAddBuiltinVar shaderprecision forceglsl killsendsp avatarzoomfov avatarfov avatardepth
 CubeAddBuiltinVar nearplane reflectclip reflectclipavatar polygonoffsetfactor polygonoffsetunits
-CubeAddBuiltinVar showeditstats statrate ragdolltimestepmin ragdolltimestepmax
+CubeAddBuiltinVar showeditstats statrate animationinterpolationtime ragdolltimestepmin ragdolltimestepmax
 CubeAddBuiltinVar ragdollrotfric ragdollrotfricstop ragdollconstrain ragdollwaterexpireoffset ragdollwaterfric
 CubeAddBuiltinVar ragdollgroundfric ragdollairfric ragdollunstick ragdollexpireoffset maxskelanimdata
 CubeAddBuiltinVar ragdolleyesmooth ragdolleyesmoothmillis ragdollbodyfric aaenvmap depthoffset
@@ -381,8 +380,9 @@ CubeAddBuiltinVar ammohudup ammohuddown ammohudcycle
 
 " Cube Keyboard Keys: {{{1
 " ===================
+
 syn case ignore
-command -nargs=* CubeAddKey syn keyword cubeKey contained <args> nextgroup=cubeParameterRegion
+command -nargs=* CubeAddKey syn keyword cubeKey contained <args>
 
 CubeAddKey MOUSE1 MOUSE2 MOUSE3 MOUSE4 MOUSE5 BACKSPACE TAB CLEAR RETURN PAUSE ESCAPE SPACE EXCLAIM
 CubeAddKey QUOTEDBL HASH DOLLAR AMPERSAND QUOTE LEFTPAREN RIGHTPAREN ASTERISK PLUS COMMA MINUS PERIOD
@@ -394,102 +394,87 @@ CubeAddKey F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12 F13 F14 F15 NUMLOCK CAPSLOCK S
 CubeAddKey RCTRL LCTRL RALT LALT RMETA LMETA LSUPER RSUPER MODE COMPOSE HELP PRINT SYSREQ BREAK MENU
 CubeAddKey MOUSE6 MOUSE7 MOUSE8
 
+delcommand CubeAddKey
+
 syn case match
-
-" Level Triggers: TODO (grep maps)
-" ===============
-"syn match cubeTrigger "level_trigger_[0-9]\+"
-
-" Next Map: {{{1
-" =========
-" TODO
-"syn match cubeNextMap "nextmap_[a-zA-Z0-9_]\+"
-
-" Delta_Game: {{{1
-
-" TODO
 
 " Variables: {{{1
 " ==========
-syn match cubeVariable          /\$[\$@]\{-}\k\{-}\ze\%(@\|\>\)/        skipwhite contains=cubeAtVariableCommand
-syn match cubeAtVariableCommand /@[\$@]\{-}\k\{-}\>/         skipwhite nextgroup=@cubeParameterRegion
-"syn match cubeAtVariable    /@\+/                       skipwhite nextgroup=@cubeParameter
 
-syn match cubeAtVariable        contained /@\+\k\+\>/   skipwhite
+syn match cubeVariable    /\$[\$@]\{-}\k\{-}\ze\%(\/\/\|@\|\>\)/ display skipwhite contains=cubeAtVariable
+syn match cubeVariable    /\$[\$@]\{-}\ze"/                      display skipwhite contains=cubeAtVariable
+syn match cubeAtVariable  /@[@]\{-}\k\{-}\>/                     display skipwhite
+syn match cubeAtVariable  /@[@]\{-}\ze"/                         display skipwhite
 
 " Binds: {{{1
 " ======
+
 syn keyword cubeBind        bind editbind specbind         skipwhite nextgroup=cubeKey
 syn keyword cubeBind        bindvar bindvarquiet           skipwhite nextgroup=cubeKey
 syn keyword cubeBind        editbindvar editbindvarquiet   skipwhite nextgroup=cubeKey
 syn keyword cubeBind        bindmod editbindmod            skipwhite nextgroup=cubeKey
-syn match   cubeBindKey     contained /\<\k\+\>/                     skipwhite nextgroup=@cubeParameter  contains=cubeKey
-syn match   cubeBindKey     contained /"\<\k\+\>"/                   skipwhite nextgroup=@cubeParameter  contains=cubeString,cubeKey
+syn match   cubeBindKey     contained /\<\k\+\>/           skipwhite contains=cubeKey            display
+syn match   cubeBindKey     contained /"\<\k\+\>"/         skipwhite contains=cubeString,cubeKey display
 syn cluster cubeSchemeCmds  add=cubeBind
 
 " Keymap: {{{1
 " =======
+
 syn keyword cubeKeymap      keymap                       skipwhite nextgroup=cubeKeycode
-syn match   cubeKeycode     contained /\<[+-]\?\d\+\>/   skipwhite nextgroup=cubeKey     contains=cubeNumber
-syn match   cubeKeycode     contained /\<[+-]\?0x\x\+\>/ skipwhite nextgroup=cubeKey     contains=cubeNumber
+syn match   cubeKeycode     contained /\<[+-]\?\d\+\>/   skipwhite nextgroup=cubeKey display contains=cubeNumber
+syn match   cubeKeycode     contained /\<[+-]\?0x\x\+\>/ skipwhite nextgroup=cubeKey display contains=cubeNumber
 syn cluster cubeSchemeCmds  add=cubeKeymap
 
 " Alias: {{{1
 " ======
+
 syn keyword cubeAlias       alias getalias      skipwhite
 syn cluster cubeSchemeCmds  add=cubeAlias
 
 " Texture: {{{1
 " ========
 
-syn keyword cubeSchemeCmd     texture                                         skipwhite nextgroup=cubeTextureType
-syn match   cubeTextureType   contained /[01cudngsze]/                        skipwhite nextgroup=cubeTexturePath
-syn match   cubeTexturePath   contained /\<\k\+\>/                            skipwhite nextgroup=cubeTextureRot
-syn region  cubeTexturePath   contained start=+"+  skip=+\^\^\|\^"+  end=+"+  skipwhite nextgroup=cubeTextureRot   keepend extend oneline
-syn match   cubeTextureRot    contained /[0-5]/                               skipwhite nextgroup=cubeTexturePosX,@cubeDelimiters   contains=cubeNumber
-syn match   cubeTexturePosX   contained /\<\k\+\>/                            skipwhite nextgroup=cubeTexturePosY,@cubeDelimiters   contains=cubeNumber
-syn match   cubeTexturePosY   contained /\<\k\+\>/                            skipwhite nextgroup=cubeTextureScale,@cubeDelimiters  contains=cubeNumber
-syn match   cubeTextureScale  contained /\<\k\+\>/                            skipwhite nextgroup=cubeParamError,@cubeDelimiters    contains=cubeNumber
+syn keyword cubeSchemeCmd     texture                                         skipwhite         nextgroup=cubeTextureType
+syn match   cubeTextureType   contained /[01cudngsze]/                        skipwhite display nextgroup=cubeTexturePath
+syn match   cubeTexturePath   contained /\<\k\+\>/                            skipwhite display nextgroup=cubeTextureRot
+syn region  cubeTexturePath   contained start=+"+  skip=+\^\^\|\^"+  end=+"+  skipwhite display nextgroup=cubeTextureRot   keepend extend oneline
+syn match   cubeTextureRot    contained /[0-5]/                               skipwhite display nextgroup=cubeTexturePosX   contains=cubeNumber
+syn match   cubeTexturePosX   contained /\<\k\+\>/                            skipwhite display nextgroup=cubeTexturePosY   contains=cubeNumber
+syn match   cubeTexturePosY   contained /\<\k\+\>/                            skipwhite display nextgroup=cubeTextureScale  contains=cubeNumber
+syn match   cubeTextureScale  contained /\<\k\+\>/                            skipwhite display                             contains=cubeNumber
 
 " Setshader: {{{1
 " ==========
 
 syn keyword cubeSchemeCmd     setshader              skipwhite nextgroup=cubeShaderParam,cubeComment
-syn match   cubeShaderParam   contained /\<\k\+\>/   skipwhite nextgroup=@cubeError,cubeComment       contains=cubeShader
+syn match   cubeShaderParam   contained /\<\k\+\>/   skipwhite nextgroup=cubeComment display contains=cubeShader
 
 " Newent: {{{1
 " =======
-syn keyword cubeSchemeCmd     newent clearents       skipwhite nextgroup=cubeEntities
 
-" TODO addserver
-"syn keyword cubeCmd         addserver           skipwhite  nextgroup=cubeServer
-"syn match cubeServer        contained /\<\(\d\{1,3\}\.\)\{3\}\d\{1,3\}\>/   skipwhite nextgroup=@cubeParameter
+syn keyword cubeSchemeCmd     newent clearents       skipwhite nextgroup=cubeEntities
 
 " Assignments: {{{1
 " ============
+
 " TODO add error when more than one parameter after =
-syn match  cubeAssignment        +\%(\k\|["\$@]\)\+\ze\s\+=+          skipwhite nextgroup=cubeAssignmentEquals contains=cubeVariable,cubeDefVar,cubeDefCmd,@cubeMacro,cubeString
-syn match  cubeAssignmentEquals  +\s\+\zs=+                 contained skipwhite nextgroup=@cubeParameter
-"syn region cubeAssignmentRegion contained start=+\ze\S+  end=+\ze[;)\]]+ end=+$+ end=+\ze//+ end=+\ze\s\S+ skipwhite keepend contains=@cubeParameter nextgroup=cubeParamError
+"syn match  cubeAssignment        +\%(\k\|["\$@]\)\+\ze\s\+=+          skipwhite nextgroup=cubeAssignmentEquals contains=cubeVariable,cubeDefVar,cubeDefCmd,cubeString
+"syn match  cubeAssignmentEquals  +\s\+\zs=+                 contained skipwhite
+"syn region cubeAssignmentRegion contained start=+\ze\S+  end=+\ze[;)\]]+ end=+$+ end=+\ze//+ end=+\ze\s\S+ skipwhite keepend
 
 " Delimiter: {{{1
 " ==========
-syn match cubeDelimiter     /;/
+
+syn match cubeDelimiter  /;/ display
 
 " Comments: {{{1
 " =========
-syn match cubeComment +//.*$+ contains=cubeTodo
 
-" Escapes: {{{1
-" ========
-syn match cubeEscape        +\^["\^fnt]\?+   extend
-" TODO try to get ^L working
-"syn match cubeEscape        +\%(\^f\|\)\%(\d\|[\~]\|\a\)+   extend
-syn match cubeEscape        +\^f\%(\d\|[\~]\|\a\)+   extend
+syn match cubeComment  +//.*$+ display contains=cubeTodo
 
 " Command Shortcut Cleanup: {{{1
 " =========================
-delcommand CubeAddKey
+
 delcommand CubeAddCmd
 delcommand CubeAddDefCmd
 delcommand CubeAddDefVar
@@ -501,38 +486,37 @@ delcommand CubeAddShaderParam
 
 " Synchronization: {{{1
 " ================
+
 if !exists("cube_minlines")
-  let cube_minlines = 200
+  let cube_minlines = 160
 endif
-if !exists("sh_maxlines")
-  let cube_maxlines = 2 * cube_minlines
+if !exists("cube_maxlines")
+  let cube_maxlines = 160
 endif
 exec "syn sync minlines=" . cube_minlines . " maxlines=" . cube_maxlines
 
-syn sync match cubeBlockSync    grouphere   cubeBlock  +\%([^@]\|^\)\@<=\[+
-syn sync match cubeBlockSync    groupthere  cubeBlock  +\]+
-syn sync match cubeParenSync    grouphere   cubeParen  +\%([^@]\|^\)\@<=(+
-syn sync match cubeParenSync    groupthere  cubeParen  +)+
-syn sync match cubeAtBlockSync  grouphere   cubeAtBlock  +\%([^@]\|^\)\@<=@\+\[+
-syn sync match cubeAtBlockSync  groupthere  cubeAtBlock  +\]+
-syn sync match cubeAtParenSync  grouphere   cubeAtParen  +\%([^@]\|^\)\@<=@\+(+
-syn sync match cubeAtParenSync  groupthere  cubeAtParen  +)+
-syn sync match cubeVarParenSync grouphere   cubeVarParen +\%([^\$]\|^\)\@<=\$\+(+
-syn sync match cubeVarParenSync groupthere  cubeVarParen +)+
-syn sync match cubeAtBlockCommandSync  grouphere   cubeAtBlockCommand  +\%([^@]\|^\)\@<=@\+\[+
-syn sync match cubeAtBlockCommandSync  groupthere  cubeAtBlockCommand  +\]+
-syn sync match cubeAtParenCommandSync  grouphere   cubeAtParenCommand  +\%([^@]\|^\)\@<=@\+(+
-syn sync match cubeAtParenCommandSync  groupthere  cubeAtParenCommand  +)+
-syn sync match cubeVarParenCommandSync grouphere   cubeVarParenCommand +\%([^\$]\|^\)\@<=\$\+(+
-syn sync match cubeVarParenCommandSync groupthere  cubeVarParenCommand +)+
+" "syn sync match cubeStringSync   grouphere   cubeString +"+
+" syn sync match cubeStringSync   grouphere   cubeString   +\^$+
+" syn sync match cubeBlockSync    grouphere   cubeBlock    +\[+
+" " syn sync match cubeBlockSync    groupthere  cubeBlock +\]+
+" syn sync match cubeParenSync    grouphere   cubeParen    +(+
+" " syn sync match cubeParenSync    groupthere  cubeParen +)+
+" syn sync match cubeAtBlockSync  grouphere   cubeAtBlock  +@\[+
+" " syn sync match cubeAtBlockSync  groupthere  NONE +\]+
+" syn sync match cubeAtParenSync  grouphere   cubeAtParen  +@(+
+" " syn sync match cubeAtParenSync  groupthere  NONE +)+
+" syn sync match cubeVarParenSync grouphere   cubeVarParen +\$(+
+" syn sync match cubeVarBlockSync grouphere   cubeVarBlock +\$\[+
+" " syn sync match cubeVarParenSync groupthere  NONE +)+
 
 " Highlighting: {{{1
 " =============
+
 "command -nargs=+ HiLink hi link <args>
 
 hi link cubeTodo         Todo
 hi link cubeComment      Comment
-hi link cubeString       String
+hi link cubeStringInner  String
 hi link cubeTexturePath  String
 
 hi link cubeEscape       Special
@@ -542,19 +526,20 @@ hi link cubeTrigger      Identifier
 hi link cubeNextMap      Identifier
 hi link cubeAssignmentEquals  Identifier
 
-"hi link @cubeError        Error
-hi link cubeBracketError Error
 hi link cubeParenError   Error
-hi link cubeParamError   Error
+"hi clear cubeUnquotedString
 
+hi link cubeMacro        Special
 hi link cubeAtVariable   Special
 hi link cubeAtBlock      Special
 hi link cubeAtParen      Special
+hi link cubeVarBlock     Identifier
 hi link cubeVarParen     Identifier
-hi link cubeAtVariableCommand   Special
-hi link cubeAtBlockCommand      Special
-hi link cubeAtParenCommand      Special
-hi link cubeVarParenCommand     Identifier
+hi link cubeVar          Identifier
+"hi link cubeAtVariableCommand   Special
+"hi link cubeAtBlockCommand      Special
+"hi link cubeAtParenCommand      Special
+"hi link cubeVarParenCommand     Identifier
 
 hi link cubeConditional  Conditional
 hi link cubeRepeat       Repeat
@@ -573,6 +558,7 @@ hi link cubeDefVar       Statement
 
 " TODO temp
 hi link cubeDontKnowCmd  Title
+
 hi link cubeShader       Title
 hi link cubeShaderParam  Title
 
@@ -587,5 +573,6 @@ hi link cubeKey          Keyword
 
 " Set Current Syntax: {{{1
 " ===================
+
 let b:current_syntax = "cube"
 " vim:set sw=4 ts=4 sts=0 ft=vim fdm=marker tw=0 et:
