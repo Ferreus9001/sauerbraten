@@ -1,6 +1,6 @@
 " Vim syntax file
 " Language:     Cube engine cfg files
-" Last Change:  2013-08-08
+" Last Change:  2013-11-24
 " Version:      1.337
 
 " Check if syntax is active {{{1
@@ -26,8 +26,7 @@ setlocal commentstring=//%s
 command! -nargs=* CubeAddCmd         syn keyword cubeCmd         <args> skipwhite
 " Cube default defined commands like demo
 command! -nargs=* CubeAddDefCmd      syn keyword cubeDefCmd      <args> skipwhite nextgroup=cubeAssignmentEquals
-" TODO Cube commands to categorize
-command! -nargs=* CubeAddDontKnowCmd syn keyword cubeDontKnowCmd <args> skipwhite
+" Cube commands to categorize
 command! -nargs=* CubeAddShader      syn keyword cubeShader      <args> skipwhite contained
 command! -nargs=* CubeAddShaderParam syn keyword cubeShaderParam <args> skipwhite contained
 " Cube math operation commands like +
@@ -241,19 +240,6 @@ CubeAddMathCmd ? ! \|\| &&
 CubeAddMathCmd ^ & \| ~ ^~ &~ \|~ << >>
 CubeAddMathCmd + - * div +f -f *f divf
 CubeAddMathCmd = != < > <= >= =s !=s <s >s <=s >=s =f !=f <f >f <=f >=f
-
-" Cube DontKnowCmds: {{{1
-" ==================
-
-"CubeAddDontKnowCmd bumpenvmapnospecmodel bumpenvmapmodel envmapscale maskscale spawnname skin bumpmap adjust pitchcorrect pitchtarget
-"CubeAddDontKnowCmd animpart lightdirworld skeleton vertexanimation triangles bumpmasksmodel bumpmasksnospecmodel nodes bumpnospecmodel
-"CubeAddDontKnowCmd shadowmapcaster lightdir notexturemodel shadowintensity aidebug
-"CubeAddDontKnowCmd explosion2dglare explosion3dglare explosion2dsoft8rect explosion3dsoft8rect explosion2dsoftrect
-"CubeAddDontKnowCmd explosion3dsoftrect explosion2dsoft8 explosion3dsoft8 explosion2dsoft explosion3dsoft explosion3d
-"CubeAddDontKnowCmd underwater underwaterrefract waterenvrefract noff ffmask ffskip thumbnail colorify colormask premul
-"CubeAddDontKnowCmd underwaterfade waterglare waterheight waterenvfade depthfxview particle
-"CubeAddDontKnowCmd colorscale particlenotexture lightmap diffusemap glowmap specmap depthmap foggednotextureglsl
-"CubeAddDontKnowCmd cleargbans demorecord isif nocompress particlesoft particlesoft8rect particlesoftrect particlesoft8
 
 " Cube Default Command Keywords: {{{1
 " ==============================
@@ -480,7 +466,6 @@ delcommand CubeAddDefCmd
 delcommand CubeAddDefVar
 delcommand CubeAddMathCmd
 delcommand CubeAddBuiltinVar
-delcommand CubeAddDontKnowCmd
 delcommand CubeAddShader
 delcommand CubeAddShaderParam
 
